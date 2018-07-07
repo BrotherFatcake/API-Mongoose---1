@@ -1,39 +1,52 @@
+//Use strict
 "use strict";
 
-//require mongoose
+//Create a constant to import(require) Mongoose
 const mongoose = require("mongoose");
 
-//Schema - const schemaName = mon.Schema({object info})
-
+//Create const for SCHEMA
+//schemaName is mongoose Schema ({schemaObject})
 const blogSchema = mongoose.Schema({
-  title:  { type: String, required: true},
-  content:  { type: String, required: true},
+  
+  //Within schemaObject specify fieldName: {type: <type>, required: true/false/'do not include'}
+  //Example: fieldName: {type: String, required: true}, fieldName2: {type: String}
+  title:  {type: String, required: true},
+  content:  {type: String, required: true},
   author: {
-      firstName:  { type: String, required: true},
-      lastName:  { type: String, required: true}
+      firstName:  {type: String, required: true},
+      lastName:  {type: String, required: true}
   }
 
 });
 
+//Create **VIRTUALS** to return more human readable sub-values
+//Example personName may have sub-values of first and last
+//schemaName virtual with arg 'virtualName' get function with no args
 
-//schemaName.virtual
-
-blogSchema.virtual('authorFull').get(function() {
-  return  `${this.author.firstName} ${this.author.lastName}`.trim()
+blogSchema.virtual("authorFull").get(function() {
+  
+  //return this.personName.first this.personName.last trim with no args
+  return  `${this.author.firstName} ${this.author.lastName}`.trim();
 });
 
-//schemaName.methods.methodName
-
-blogSchema.methods.authorDetail = function()  {
+//Create cleanUp function to specif what should be returned via the API
+//schemaName methods methodName is function with no args
+blogSchema.methods.cleanUp = function()  {
+  
+  //return {object}
   return{
-    id: this. _id,
+    
+    //Within object {key1: this.val1, key2: this.val2, key3: this.virtualName}
+    id: this._id,
     title: this.title,
     content: this.content,
-    author: this.authorFull
+    author: this.authorFull,
+    created: this.created
   };
 };
 
+//Create const modelName is mongoose model with args '<DB collectionName>' and schemaName
+const Blog = mongoose.model("blogposts", blogSchema);
 
-const Blog = mongoose.model("Blog", blogSchema);
-
-module.exports = { Blog };
+//export module modelName
+module.exports = {Blog};
